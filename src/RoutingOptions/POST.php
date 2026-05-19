@@ -1,5 +1,5 @@
 <?php
-namespace Abdelwahab\RoutingExt\RoutingManager\Methods;
+namespace AbdelwahabT\RoutingExt\RoutingManager\Methods;
 
 use Attribute;
 

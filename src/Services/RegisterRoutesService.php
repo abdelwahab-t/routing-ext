@@ -2,16 +2,16 @@
 
 namespace Services;
 
-use Abdelwahab\RoutingExt\RoutingManager\Methods\DELETE;
-use Abdelwahab\RoutingExt\RoutingManager\Methods\GET;
-use Abdelwahab\RoutingExt\RoutingManager\Methods\PATCH;
-use Abdelwahab\RoutingExt\RoutingManager\Methods\POST;
-use Abdelwahab\RoutingExt\RoutingManager\Methods\PUT;
-use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use Abdelwahab\RoutingExt\Exceptions\ModuleClassNotFoundException;
+use Illuminate\Support\Facades\Route;
+use AbdelwahabT\RoutingExt\RoutingManager\Methods\DELETE;
+use AbdelwahabT\RoutingExt\RoutingManager\Methods\GET;
+use AbdelwahabT\RoutingExt\RoutingManager\Methods\PATCH;
+use AbdelwahabT\RoutingExt\RoutingManager\Methods\POST;
+use AbdelwahabT\RoutingExt\RoutingManager\Methods\PUT;
+use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
 final readonly class RegisterRoutesService
 {

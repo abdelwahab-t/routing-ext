@@ -1,11 +1,11 @@
 <?php
 
-namespace Abdelwahab\RoutingExt\Providers;
+namespace AbdelwahabT\RoutingExt\Providers;
 
 use ReflectionException;
 use Illuminate\Support\ServiceProvider;
-use Abdelwahab\RoutingExt\Exceptions\ModuleClassNotFoundException;
-use Abdelwahab\RoutingExt\Services\AppBootService;
+use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
+use AbdelwahabT\RoutingExt\Services\AppBootService;
 
 class RoutingExtServiceProvider extends ServiceProvider
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Abdelwahab\RoutingExt\Exceptions;
+namespace AbdelwahabT\RoutingExt\Exceptions;
 
 use Exception;
 use Throwable;
