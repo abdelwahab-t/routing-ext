@@ -1,6 +1,6 @@
 <?php
 
-namespace Services;
+namespace AbdelwahabT\RoutingExt\Services;
 
 use ReflectionClass;
 use ReflectionException;

@@ -4,7 +4,6 @@ namespace AbdelwahabT\RoutingExt\Services;
 
 use ReflectionException;
 use Illuminate\Support\Facades\App;
-use Services\RegisterRoutesService;
 use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
 final readonly class AppBootService
