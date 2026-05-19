@@ -1,0 +1,29 @@
+{
+    "name": "abdelwahab-t/routing-ext",
+    "description": "laravel routing package",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "AbdelwahabT\\RoutingExt\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "abdelwahab-t/routing-ext\\Providers\\RoutingExtServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "abdelwahab",
+            "email": "eng.abdelwahap.taha@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^11.0",
+        "illuminate/routing": "^11.0"
+    }
+}
