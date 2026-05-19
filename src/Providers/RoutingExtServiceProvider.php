@@ -1,6 +1,6 @@
 <?php
 
-namespace Abdelwahab\RoutingExt;
+namespace Abdelwahab\RoutingExt\Providers;
 
 use ReflectionException;
 use Illuminate\Support\ServiceProvider;
