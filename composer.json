@@ -11,7 +11,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "abdelwahab-t/routing-ext\\src\\Providers\\RoutingExtServiceProvider"
+                "abdelwahab-t/routing-ext\\Providers\\RoutingExtServiceProvider"
             ]
         }
     },
