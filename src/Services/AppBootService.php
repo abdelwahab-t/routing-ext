@@ -10,16 +10,15 @@ final readonly class AppBootService
 {
 
     public function __construct(
-        private App $app,
         private RegisterRoutesService $registerRoutesService,
     ){}
 
     /**
      * @throws ReflectionException|ModuleClassNotFoundException
      */
-    public function boot(): void
+    public function boot(string $basePath): void
     {
-        foreach (glob( $this->app->basePath() . 'modules/*/App/Http/Controllers/*.php' ) as $file) {
+        foreach (glob( $basePath . 'modules/*/App/Http/Controllers/*.php' ) as $file) {
             $this->registerRoutesService->register($file);
         }
     }

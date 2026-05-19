@@ -23,7 +23,9 @@ class RoutingExtServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->appBootService->boot();
+        $this->appBootService->boot(
+            $this->app->basePath()
+        );
     }
 
 }
