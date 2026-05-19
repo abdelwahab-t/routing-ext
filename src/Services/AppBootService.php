@@ -1,10 +1,11 @@
 <?php
 
-namespace Services;
+namespace Abdelwahab\RoutingExt\Services;
 
+use Abdelwahab\RoutingExt\Exceptions\ModuleClassNotFoundException;
 use Illuminate\Support\Facades\App;
-use ModuleClassNotFoundException;
 use ReflectionException;
+use Services\RegisterRoutesService;
 
 final readonly class AppBootService
 {

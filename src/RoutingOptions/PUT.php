@@ -1,5 +1,7 @@
 <?php
-namespace App\RoutingManager\Methods;
+namespace Abdelwahab\RoutingExt\RoutingManager\Methods;
 
-#[\Attribute(\Attribute::TARGET_METHOD)]
+use Attribute;
+
+#[Attribute(Attribute::TARGET_METHOD)]
 class PUT extends RouteOption {}

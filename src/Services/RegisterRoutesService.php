@@ -2,16 +2,16 @@
 
 namespace Services;
 
-use App\RoutingManager\Methods\DELETE;
-use App\RoutingManager\Methods\GET;
-use App\RoutingManager\Methods\PATCH;
-use App\RoutingManager\Methods\POST;
-use App\RoutingManager\Methods\PUT;
+use Abdelwahab\RoutingExt\RoutingManager\Methods\DELETE;
+use Abdelwahab\RoutingExt\RoutingManager\Methods\GET;
+use Abdelwahab\RoutingExt\RoutingManager\Methods\PATCH;
+use Abdelwahab\RoutingExt\RoutingManager\Methods\POST;
+use Abdelwahab\RoutingExt\RoutingManager\Methods\PUT;
 use Illuminate\Support\Facades\Route;
-use ModuleClassNotFoundException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use Abdelwahab\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
 final readonly class RegisterRoutesService
 {
@@ -62,10 +62,10 @@ final readonly class RegisterRoutesService
     {
         $routeMethod = match ($instance::class){
             GET::class      => 'get',
+            PUT::class      => 'put',
             POST::class     => 'post',
             PATCH::class    => 'patch',
-            PUT::class      => 'put',
-            DELETE::class   => 'delete',
+            DELETE::class   => 'delete'
         };
 
         $route = Route::prefix($instance->prefix)->{$routeMethod}(
