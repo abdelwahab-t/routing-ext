@@ -1,6 +1,6 @@
 <?php
 
-namespace AbdelwahabT\RoutingExt\Routing\Discovery;
+namespace AbdelwahabT\RoutingExt\Bootstrap;
 
 use ReflectionClass;
 use ReflectionException;

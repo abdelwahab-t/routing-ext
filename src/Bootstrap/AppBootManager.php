@@ -3,7 +3,6 @@
 namespace AbdelwahabT\RoutingExt\Bootstrap;
 
 use ReflectionException;
-use AbdelwahabT\RoutingExt\Routing\Discovery\RouteAttributeRegistrar;
 use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
 final readonly class AppBootManager
