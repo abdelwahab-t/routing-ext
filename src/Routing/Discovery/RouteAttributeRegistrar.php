@@ -8,7 +8,7 @@ use ReflectionMethod;
 use Illuminate\Support\Facades\Route;
 use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
-final readonly class RegisterRoutesService
+final readonly class RouteAttributeRegistrar
 {
 
     /**

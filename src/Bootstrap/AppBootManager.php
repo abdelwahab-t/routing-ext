@@ -3,14 +3,14 @@
 namespace AbdelwahabT\RoutingExt\Bootstrap;
 
 use ReflectionException;
-use AbdelwahabT\RoutingExt\Routing\Discovery\RegisterRoutesService;
+use AbdelwahabT\RoutingExt\Routing\Discovery\RouteAttributeRegistrar;
 use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
 final readonly class AppBootManager
 {
 
     public function __construct(
-        private RegisterRoutesService $registerRoutesService,
+        private RouteAttributeRegistrar $registrar,
     ){}
 
     /**
@@ -19,7 +19,7 @@ final readonly class AppBootManager
     public function boot(string $basePath): void
     {
         foreach (glob( $basePath . 'modules/*/App/Http/Controllers/*.php' ) as $file) {
-            $this->registerRoutesService->register($file);
+            $this->registrar->register($file);
         }
     }
 
