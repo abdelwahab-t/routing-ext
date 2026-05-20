@@ -1,16 +1,11 @@
 <?php
 
-namespace AbdelwahabT\RoutingExt\Services;
+namespace AbdelwahabT\RoutingExt\Routing\Discovery;
 
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use Illuminate\Support\Facades\Route;
-use AbdelwahabT\RoutingExt\RoutingManager\Methods\DELETE;
-use AbdelwahabT\RoutingExt\RoutingManager\Methods\GET;
-use AbdelwahabT\RoutingExt\RoutingManager\Methods\PATCH;
-use AbdelwahabT\RoutingExt\RoutingManager\Methods\POST;
-use AbdelwahabT\RoutingExt\RoutingManager\Methods\PUT;
 use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
 final readonly class RegisterRoutesService
@@ -60,15 +55,8 @@ final readonly class RegisterRoutesService
 
     private function registerRoute(object $instance, string $class, ReflectionMethod $method): void
     {
-        $routeMethod = match ($instance::class){
-            GET::class      => 'get',
-            PUT::class      => 'put',
-            POST::class     => 'post',
-            PATCH::class    => 'patch',
-            DELETE::class   => 'delete'
-        };
 
-        $route = Route::prefix($instance->prefix)->{$routeMethod}(
+        $route = Route::prefix($instance->prefix)->{$instance->method->value}(
             $instance->uri, [$class, $method->getName()]
         )->name($instance->name);
 
