@@ -18,7 +18,7 @@ final readonly class AppBootManager
     public function boot(string $basePath): void
     {
         foreach (glob( $basePath . '/app/Modules/*/App/Http/Controllers/*.php' ) as $file) {
-            $this->registrar->register($file);
+            $this->registrar->register(str_replace('\\', '/', $file));
         }
     }
 
