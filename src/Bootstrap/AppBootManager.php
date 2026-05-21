@@ -25,9 +25,9 @@ final readonly class AppBootManager
 
     private function getFilePath(string $basePath, string $file): string
     {
-        return $basePath . str_contains($basePath, '/') ?
+        return $basePath . (str_contains($basePath, '/') ?
             str_replace('\\', '/', $file) :
-            str_replace('/', '\\', $file);
+            str_replace('/', '\\', $file));
     }
 
 }
