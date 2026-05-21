@@ -24,7 +24,7 @@ final readonly class RouteAttributeRegistrar
     /**
      * @throws ModuleClassNotFoundException
      */
-    private function getClass(string $file): ReflectionClass
+    private function getClass(string $file): string
     {
 
         $class = "App\\Modules\\" . basename(dirname($file, 4)) . "\\App\\Http\\Controllers" .
