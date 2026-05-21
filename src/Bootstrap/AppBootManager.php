@@ -17,7 +17,7 @@ final readonly class AppBootManager
      */
     public function boot(string $basePath): void
     {
-        foreach (glob( $basePath . 'app/Modules/*/Http/Controllers/*.php' ) as $file) {
+        foreach (glob( $basePath . 'app/Modules/*/App/Http/Controllers/*.php' ) as $file) {
             $this->registrar->register($file);
         }
     }
