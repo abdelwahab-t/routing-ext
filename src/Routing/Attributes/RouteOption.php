@@ -12,7 +12,7 @@ class RouteOption
         public HttpMethods $method,
         public string $uri,
         public string $name,
-        public string $prefix,
+        public ?string $prefix = null,
         public Middleware|string|null $middleware = null
     ) {}
 }

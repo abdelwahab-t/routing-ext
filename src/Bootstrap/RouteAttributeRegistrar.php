@@ -55,8 +55,13 @@ final readonly class RouteAttributeRegistrar
 
     private function registerRoute(object $instance, string $class, ReflectionMethod $method): void
     {
+        $route = Route::name($instance->name);
 
-        $route = Route::prefix($instance->prefix)->{$instance->method->value}(
+        if ($instance->prefix) {
+            $route->prefix($instance->prefix);
+        }
+
+        $route->{$instance->method->value}(
             $instance->uri, [$class, $method->getName()]
         )->name($instance->name);
 
