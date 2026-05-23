@@ -26,19 +26,61 @@ final readonly class RouteAttributeRegistrar
      */
     private function getClass(string $file): string
     {
-
-        $class = "App\\Modules\\" . basename(dirname($file, 4)) . "\\App\\Http\\Controllers" .
-            '\\' . pathinfo($file, PATHINFO_FILENAME);
+        $class = $this->resolveClassFromFile($file);
 
         if (!class_exists($class)) {
             require_once $file;
             if (!class_exists($class)) {
-                throw new ModuleClassNotFoundException;
+                throw new ModuleClassNotFoundException($class);
             }
         }
 
         return $class;
+    }
 
+    private function resolveClassFromFile(string $file): string
+    {
+        $tokens = token_get_all(file_get_contents($file));
+
+        $namespace = '';
+        $class = '';
+
+        for ($i = 0, $count = count($tokens); $i < $count; $i++) {
+            if (is_array($tokens[$i]) && $tokens[$i][0] === T_NAMESPACE) {
+                $namespace = $this->extractName($tokens, $i);
+            }
+
+            if (is_array($tokens[$i]) && $tokens[$i][0] === T_CLASS) {
+                if (isset($tokens[$i - 1]) && is_array($tokens[$i - 1]) && $tokens[$i - 1][0] === T_DOUBLE_COLON) {
+                    continue;
+                }
+                $class = $this->extractName($tokens, $i);
+                break;
+            }
+        }
+
+        return $namespace ? $namespace . '\\' . $class : $class;
+    }
+
+    private function extractName(array $tokens, int &$index): string
+    {
+        $name = '';
+        $index++;
+
+        while (isset($tokens[$index])) {
+            if (is_array($tokens[$index])) {
+                if (in_array($tokens[$index][0], [
+                    T_STRING, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED, T_NS_SEPARATOR
+                ], true)) {
+                    $name .= $tokens[$index][1];
+                }else if ($tokens[$index][0] !== T_WHITESPACE) {
+                    break;
+                }
+            }
+            $index++;
+        }
+
+        return $name;
     }
 
     /**
