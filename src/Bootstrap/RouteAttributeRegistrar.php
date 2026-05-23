@@ -2,6 +2,7 @@
 
 namespace AbdelwahabT\RoutingExt\Bootstrap;
 
+use AbdelwahabT\RoutingExt\Routing\Attributes\RouteOption;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -90,12 +91,14 @@ final readonly class RouteAttributeRegistrar
     {
         foreach ((new ReflectionClass($class))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             foreach ($method->getAttributes() as $attribute) {
-                $this->registerRoute($attribute->newInstance(), $class, $method);
+                if ($attribute->newInstance() instanceof RouteOption) {
+                    $this->registerRoute($attribute->newInstance(), $class, $method);
+                }
             }
         }
     }
 
-    private function registerRoute(object $instance, string $class, ReflectionMethod $method): void
+    private function registerRoute(RouteOption $instance, string $class, ReflectionMethod $method): void
     {
         $route = Route::name($instance->name);
 
