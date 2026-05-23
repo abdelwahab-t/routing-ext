@@ -105,7 +105,7 @@ final readonly class RouteAttributeRegistrar
 
         $route->{$instance->method->value}(
             $instance->uri, [$class, $method->getName()]
-        )->name($instance->name);
+        );
 
         if($instance?->middleware){
             $route->middleware([$instance->middleware]);
