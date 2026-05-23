@@ -98,20 +98,20 @@ final readonly class RouteAttributeRegistrar
         }
     }
 
-    private function registerRoute(RouteOption $instance, string $class, ReflectionMethod $method): void
+    private function registerRoute(RouteOption $routeOption, string $class, ReflectionMethod $method): void
     {
-        $route = Route::name($instance->name);
+        $route = Route::name($routeOption->name);
 
-        if ($instance->prefix) {
-            $route->prefix($instance->prefix);
+        if ($routeOption->prefix) {
+            $route->prefix($routeOption->prefix);
         }
 
-        $route->{$instance->method->value}(
-            $instance->uri, [$class, $method->getName()]
+        $route->{$routeOption->method->value}(
+            $routeOption->uri, [$class, $method->getName()]
         );
 
-        if($instance?->middleware){
-            $route->middleware([$instance->middleware]);
+        if($routeOption?->middleware){
+            $route->middleware([$routeOption->middleware]);
         }
     }
 
