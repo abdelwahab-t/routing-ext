@@ -13,13 +13,23 @@ final readonly class AppBootManager
     ){}
 
     /**
+     * @param string $basePath
+     * @param array<string> $controllersDirs
      * @throws ReflectionException|ModuleClassNotFoundException
      */
-    public function boot(string $basePath): void
+    public function boot(string $basePath, array $controllersDirs): void
     {
-        $path = $this->getFilePath($basePath, '/app/Modules/*/App/Http/Controllers/*.php');
-        foreach (glob($path) as $file) {
-            $this->registrar->register($file);
+        foreach ($controllersDirs as $controllersDir) {
+
+            $path = $this->getFilePath(
+                $basePath,
+                sprintf('/%s/*.php', $controllersDir)
+            );
+
+            foreach (glob($path) as $file) {
+                $this->registrar->register($file);
+            }
+
         }
     }
 

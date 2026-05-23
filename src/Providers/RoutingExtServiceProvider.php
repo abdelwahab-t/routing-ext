@@ -18,13 +18,25 @@ class RoutingExtServiceProvider extends ServiceProvider
         parent::__construct($app);
     }
 
+    public function register(): void
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/main.php', 'routing-ext'
+        );
+    }
+
     /**
      * @throws ReflectionException|ModuleClassNotFoundException
      */
     public function boot(): void
     {
+        $this->publishes([
+            __DIR__ . '/../config/main.php' => config_path('routing-ext.php'),
+        ], 'routing-config');
+
         $this->appBootService->boot(
-            $this->app->basePath()
+            $this->app->basePath(),
+            config('routing-ext.controllers_directories', [])
         );
     }
 
