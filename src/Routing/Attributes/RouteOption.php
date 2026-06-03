@@ -13,6 +13,7 @@ class RouteOption
         public string $uri,
         public string $name,
         public ?string $prefix = null,
-        public Middleware|string|null $middleware = null
+        public array|Middleware|string|null $middleware = null,
+        public array|string|null $ability = null,
     ) {}
 }

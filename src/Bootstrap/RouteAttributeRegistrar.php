@@ -3,6 +3,7 @@
 namespace AbdelwahabT\RoutingExt\Bootstrap;
 
 use AbdelwahabT\RoutingExt\Routing\Attributes\RouteOption;
+use Illuminate\Routing\Controllers\Middleware;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -102,6 +103,12 @@ final readonly class RouteAttributeRegistrar
     {
         $route = Route::name($routeOption->name);
 
+        $middlewares = $this->getMiddlewares($routeOption);
+
+        if (!empty($middlewares)) {
+            $route->middleware($middlewares);
+        }
+
         if ($routeOption->prefix) {
             $route->prefix($routeOption->prefix);
         }
@@ -110,9 +117,31 @@ final readonly class RouteAttributeRegistrar
             $routeOption->uri, [$class, $method->getName()]
         );
 
-        if($routeOption?->middleware){
-            $route->middleware([$routeOption->middleware]);
+    }
+
+    private function getMiddlewares(RouteOption $routeOption): array
+    {
+
+        $middlewares = [];
+
+        if ($routeOption->middleware) {
+            if (is_array($routeOption->middleware)) {
+                $middlewares = $routeOption->middleware;
+            } else {
+                $middlewares[] = $routeOption->middleware;
+            }
         }
+
+        if ($routeOption->ability) {
+            if (is_array($routeOption->ability)) {
+                $middlewares = array_merge($middlewares, array_map(fn (string $middleware) => "can:$middleware", $routeOption->ability));
+            } else {
+                $middlewares[] = "can:{$routeOption->ability}";
+            }
+        }
+
+        return $middlewares;
+
     }
 
 }
