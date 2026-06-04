@@ -108,19 +108,27 @@ final readonly class RouteAttributeRegistrar
 
     private function registerControllerRoute(ResourceRoute $resourceRoute, string $class): void
     {
-        $route = Route::getFacadeRoot();
+        $route = null;
 
         $middlewares = $this->getMiddlewares($resourceRoute);
 
         if (!empty($middlewares)) {
-            $route->middleware($middlewares);
+            $route = Route::middleware($middlewares);
         }
 
         if ($resourceRoute->prefix) {
-            $route->prefix($resourceRoute->prefix);
+            if ($route) {
+                $route->prefix($resourceRoute->prefix);
+            } else {
+                Route::prefix($resourceRoute->prefix);
+            }
         }
 
-        $route->resource($resourceRoute->name, $class);
+        if ($route) {
+            $route->resource($resourceRoute->name, $class);
+        } else {
+            Route::resource($resourceRoute->name, $class);
+        }
 
     }
 
