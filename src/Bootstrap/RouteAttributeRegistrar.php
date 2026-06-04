@@ -3,7 +3,6 @@
 namespace AbdelwahabT\RoutingExt\Bootstrap;
 
 use AbdelwahabT\RoutingExt\Routing\Attributes\RouteOption;
-use Illuminate\Routing\Controllers\Middleware;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -90,12 +89,38 @@ final readonly class RouteAttributeRegistrar
      */
     private function registerControllersRoutes(string $class): void
     {
-        foreach ((new ReflectionClass($class))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        $class = new ReflectionClass($class);
+        $this->registerControllerRoute($class);
+
+        foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             foreach ($method->getAttributes() as $attribute) {
                 if ($attribute->newInstance() instanceof RouteOption) {
                     $this->registerRoute($attribute->newInstance(), $class, $method);
                 }
             }
+        }
+    }
+
+    private function registerControllerRoute(ReflectionClass $class): void
+    {
+        $controllerAttribute = $class->getAttributes(RouteOption::class)[0] ?? null;
+        $routeOption = $controllerAttribute?->newInstance();
+        if ($routeOption instanceof RouteOption) {
+
+            $route = Route::getFacadeRoot();
+
+            $middlewares = $this->getMiddlewares($routeOption);
+
+            if (!empty($middlewares)) {
+                $route->middleware($middlewares);
+            }
+
+            if ($routeOption->prefix) {
+                $route->prefix($routeOption->prefix);
+            }
+
+            $route->resource($routeOption->name, $class);
+
         }
     }
 
