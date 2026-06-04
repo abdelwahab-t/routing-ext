@@ -91,7 +91,7 @@ final readonly class RouteAttributeRegistrar
     private function registerControllersRoutes(string $class): void
     {
         $reflectionClass = new ReflectionClass($class);
-        $controllerAttribute = $reflectionClass->getAttributes(RouteOption::class)[0] ?? null;
+        $controllerAttribute = $reflectionClass->getAttributes(ResourceRoute::class)[0] ?? null;
 
         if ($controllerAttribute?->newInstance() instanceof ResourceRoute) {
             $this->registerControllerRoute($controllerAttribute->newInstance(), $class);
