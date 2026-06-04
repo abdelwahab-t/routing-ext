@@ -125,7 +125,7 @@ final readonly class RouteAttributeRegistrar
         }
 
         if ($route) {
-            $route->resource($resourceRoute->name, $class);
+            $route->group(fn () => Route::resource($resourceRoute->name, $class));
         } else {
             Route::resource($resourceRoute->name, $class);
         }
