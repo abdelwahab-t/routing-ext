@@ -2,6 +2,7 @@
 
 namespace AbdelwahabT\RoutingExt\Bootstrap;
 
+use AbdelwahabT\RoutingExt\Routing\Attributes\ResourceRoute;
 use AbdelwahabT\RoutingExt\Routing\Attributes\RouteOption;
 use ReflectionClass;
 use ReflectionException;
@@ -92,7 +93,7 @@ final readonly class RouteAttributeRegistrar
         $reflectionClass = new ReflectionClass($class);
         $controllerAttribute = $reflectionClass->getAttributes(RouteOption::class)[0] ?? null;
 
-        if ($controllerAttribute?->newInstance() instanceof RouteOption) {
+        if ($controllerAttribute?->newInstance() instanceof ResourceRoute) {
             $this->registerControllerRoute($controllerAttribute->newInstance(), $class);
         }
 
@@ -105,21 +106,21 @@ final readonly class RouteAttributeRegistrar
         }
     }
 
-    private function registerControllerRoute(RouteOption $routeOption, string $class): void
+    private function registerControllerRoute(ResourceRoute $resourceRoute, string $class): void
     {
         $route = Route::getFacadeRoot();
 
-        $middlewares = $this->getMiddlewares($routeOption);
+        $middlewares = $this->getMiddlewares($resourceRoute);
 
         if (!empty($middlewares)) {
             $route->middleware($middlewares);
         }
 
-        if ($routeOption->prefix) {
-            $route->prefix($routeOption->prefix);
+        if ($resourceRoute->prefix) {
+            $route->prefix($resourceRoute->prefix);
         }
 
-        $route->resource($routeOption->name, $class);
+        $route->resource($resourceRoute->name, $class);
 
     }
 
@@ -143,7 +144,7 @@ final readonly class RouteAttributeRegistrar
 
     }
 
-    private function getMiddlewares(RouteOption $routeOption): array
+    private function getMiddlewares(RouteOption|ResourceRoute $routeOption): array
     {
 
         $middlewares = [];
