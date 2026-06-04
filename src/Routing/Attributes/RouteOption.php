@@ -10,8 +10,8 @@ class RouteOption
 {
     public function __construct(
         public ?HttpMethods $method = null,
-        public ?string $name = null,
         public ?string $uri = null,
+        public ?string $name = null,
         public ?string $prefix = null,
         public array|Middleware|string|null $middleware = null,
         public array|string|null $ability = null,
@@ -42,9 +42,9 @@ class RouteOption
         return new self(HttpMethods::DELETE);
     }
 
-    public static function resource(string $name): self
+    public static function resource(string $name, string $uri): self
     {
-        return new self(null, $name);
+        return new self(null, $uri, $name);
     }
 
     public function name(string $name): self
