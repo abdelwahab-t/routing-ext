@@ -89,10 +89,14 @@ final readonly class RouteAttributeRegistrar
      */
     private function registerControllersRoutes(string $class): void
     {
-        $class = new ReflectionClass($class);
-        $this->registerControllerRoute($class);
+        $reflectionClass = new ReflectionClass($class);
+        $controllerAttribute = $reflectionClass->getAttributes(RouteOption::class)[0] ?? null;
 
-        foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        if ($controllerAttribute?->newInstance() instanceof RouteOption) {
+            $this->registerControllerRoute($controllerAttribute->newInstance(), $class);
+        }
+
+        foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             foreach ($method->getAttributes() as $attribute) {
                 if ($attribute->newInstance() instanceof RouteOption) {
                     $this->registerRoute($attribute->newInstance(), $class, $method);
@@ -101,27 +105,22 @@ final readonly class RouteAttributeRegistrar
         }
     }
 
-    private function registerControllerRoute(ReflectionClass $class): void
+    private function registerControllerRoute(RouteOption $routeOption, string $class): void
     {
-        $controllerAttribute = $class->getAttributes(RouteOption::class)[0] ?? null;
-        $routeOption = $controllerAttribute?->newInstance();
-        if ($routeOption instanceof RouteOption) {
+        $route = Route::getFacadeRoot();
 
-            $route = Route::getFacadeRoot();
+        $middlewares = $this->getMiddlewares($routeOption);
 
-            $middlewares = $this->getMiddlewares($routeOption);
-
-            if (!empty($middlewares)) {
-                $route->middleware($middlewares);
-            }
-
-            if ($routeOption->prefix) {
-                $route->prefix($routeOption->prefix);
-            }
-
-            $route->resource($routeOption->name, $class);
-
+        if (!empty($middlewares)) {
+            $route->middleware($middlewares);
         }
+
+        if ($routeOption->prefix) {
+            $route->prefix($routeOption->prefix);
+        }
+
+        $route->resource($routeOption->name, $class);
+
     }
 
     private function registerRoute(RouteOption $routeOption, string $class, ReflectionMethod $method): void
@@ -161,7 +160,7 @@ final readonly class RouteAttributeRegistrar
             if (is_array($routeOption->ability)) {
                 $middlewares = array_merge($middlewares, array_map(fn (string $middleware) => "can:$middleware", $routeOption->ability));
             } else {
-                $middlewares[] = "can:{$routeOption->ability}";
+                $middlewares[] = "can:$routeOption->ability";
             }
         }
 
