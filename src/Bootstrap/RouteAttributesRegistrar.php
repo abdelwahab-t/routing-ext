@@ -122,8 +122,8 @@ final readonly class RouteAttributesRegistrar
 
         if ($resourceRoute) {
             $routes[$resourceRoute->prefix][] = [
-                'route' => $resourceRoute,
-                'class' => $class,
+                'resourceRoute' => $resourceRoute,
+                'class'         => $class,
             ];
         }
     }
@@ -137,7 +137,7 @@ final readonly class RouteAttributesRegistrar
                 $route = $attribute->newInstance();
                 if ($route instanceof RouteOption) {
                     $routes[$route->prefix][] = [
-                        'route' => $route,
+                        'routeOption' => $route,
                         'class' => $class,
                         'method' => $method,
                     ];
