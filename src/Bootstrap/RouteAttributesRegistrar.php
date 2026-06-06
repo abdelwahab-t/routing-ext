@@ -151,9 +151,9 @@ final readonly class RouteAttributesRegistrar
         foreach ($groupedRoutes as $prefix => $routes) {
             Route::prefix($prefix)->group(function () use ($routes) {
                 foreach ($routes as $route) {
-                    if ($route['route'] instanceof RouteOption) {
+                    if (isset($route['routeOption'])) {
                         $this->registerRoute(...$route);
-                    } else if ($route['route'] instanceof ResourceRoute) {
+                    } else if (isset($route['resourceRoute'])) {
                         $this->registerControllerRoute(...$route);
                     }
                 }
