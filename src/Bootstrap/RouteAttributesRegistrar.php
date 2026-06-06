@@ -10,16 +10,16 @@ use ReflectionMethod;
 use Illuminate\Support\Facades\Route;
 use AbdelwahabT\RoutingExt\Exceptions\ModuleClassNotFoundException;
 
-final readonly class RouteAttributeRegistrar
+final readonly class RouteAttributesRegistrar
 {
 
     /**
      * @throws ReflectionException|ModuleClassNotFoundException
      */
-    public function register(string $file): void
+    public function register(array $controllers): void
     {
         $this->registerControllersRoutes(
-            $this->getClass($file)
+            $controllers
         );
     }
 
@@ -86,48 +86,90 @@ final readonly class RouteAttributeRegistrar
     }
 
     /**
-     * @throws ReflectionException
+     * @throws ReflectionException|ModuleClassNotFoundException
      */
-    private function registerControllersRoutes(string $class): void
+    private function registerControllersRoutes(array $controllers): void
     {
-        $reflectionClass = new ReflectionClass($class);
-        $controllerAttribute = $reflectionClass->getAttributes(ResourceRoute::class)[0] ?? null;
+        $this->registerRoutes(
+            $this->loadControllersInstances($controllers)
+        );
+    }
 
-        if ($controllerAttribute?->newInstance() instanceof ResourceRoute) {
-            $this->registerControllerRoute($controllerAttribute->newInstance(), $class);
+    /**
+     * @throws ModuleClassNotFoundException|ReflectionException
+     */
+    private function loadControllersInstances(array $controllers): array
+    {
+        $routes = [];
+        foreach ($controllers as $controller) {
+            $class = $this->getClass($controller);
+            $reflectionClass = new ReflectionClass($class);
+
+            $this->attachResourceRouteIfExists($routes, $reflectionClass, $class);
+            $this->attachMethodsRoutesIfExists($routes, $reflectionClass, $class);
+
         }
 
+        return $routes;
+    }
+
+    private function attachResourceRouteIfExists(
+        array &$routes, ReflectionClass $reflectionClass, string $class
+    ): void
+    {
+        $controllerAttribute = $reflectionClass->getAttributes(ResourceRoute::class)[0] ?? null;
+        $resourceRoute = $controllerAttribute?->newInstance();
+
+        if ($resourceRoute) {
+            $routes[$resourceRoute->prefix][] = [
+                'route' => $resourceRoute,
+                'class' => $class,
+            ];
+        }
+    }
+
+    private function attachMethodsRoutesIfExists(
+        array &$routes, ReflectionClass $reflectionClass, string $class
+    ): void
+    {
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             foreach ($method->getAttributes() as $attribute) {
-                if ($attribute->newInstance() instanceof RouteOption) {
-                    $this->registerRoute($attribute->newInstance(), $class, $method);
+                $route = $attribute->newInstance();
+                if ($route instanceof RouteOption) {
+                    $routes[$route->prefix][] = [
+                        'route' => $route,
+                        'class' => $class,
+                        'method' => $method,
+                    ];
                 }
             }
         }
     }
 
+    private function registerRoutes(array $groupedRoutes): void
+    {
+        foreach ($groupedRoutes as $prefix => $routes) {
+            Route::prefix($prefix)->group(function () use ($routes) {
+                foreach ($routes as $route) {
+                    if ($route['route'] instanceof RouteOption) {
+                        $this->registerRoute(...$route);
+                    } else if ($route['route'] instanceof ResourceRoute) {
+                        $this->registerControllerRoute(...$route);
+                    }
+                }
+            });
+        }
+    }
+
     private function registerControllerRoute(ResourceRoute $resourceRoute, string $class): void
     {
-        $route = null;
+
+        $route = Route::resource($resourceRoute->name, $class);
 
         $middlewares = $this->getMiddlewares($resourceRoute);
 
         if (!empty($middlewares)) {
-            $route = Route::middleware($middlewares);
-        }
-
-        if ($resourceRoute->prefix) {
-            if ($route) {
-                $route->prefix($resourceRoute->prefix);
-            } else {
-                Route::prefix($resourceRoute->prefix);
-            }
-        }
-
-        if ($route) {
-            $route->group(fn () => Route::resource($resourceRoute->name, $class));
-        } else {
-            Route::resource($resourceRoute->name, $class);
+            $route->middleware($middlewares);
         }
 
     }
@@ -140,10 +182,6 @@ final readonly class RouteAttributeRegistrar
 
         if (!empty($middlewares)) {
             $route->middleware($middlewares);
-        }
-
-        if ($routeOption->prefix) {
-            $route->prefix($routeOption->prefix);
         }
 
         $route->{$routeOption->method->value}(

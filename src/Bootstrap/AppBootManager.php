@@ -9,7 +9,7 @@ final readonly class AppBootManager
 {
 
     public function __construct(
-        private RouteAttributeRegistrar $registrar,
+        private RouteAttributesRegistrar $registrar,
     ){}
 
     /**
@@ -19,25 +19,27 @@ final readonly class AppBootManager
      */
     public function boot(string $basePath, array $controllersDirs): void
     {
+        $controllers = [];
         foreach ($controllersDirs as $controllersDir) {
             $path = $this->getFilePath($basePath, sprintf('/%s/*', $controllersDir));
-            $this->loadControllers($basePath, glob($path));
+            $this->loadControllersFiles($controllers, $basePath, glob($path));
         }
+        $this->registrar->register($controllers);
     }
 
     /**
      * @throws ReflectionException|ModuleClassNotFoundException
      */
-    private function loadControllers(string $basePath, array $controllers): void
+    private function loadControllersFiles(array &$controllers, string $basePath, array $controllersPath): void
     {
         $separator = str_contains($basePath, '/') ? '/' : '\\';
-        foreach ($controllers as $file) {
+        foreach ($controllersPath as $file) {
             if (is_dir($file)) {
-                $this->loadControllers($basePath, glob($file . $separator . '*'));
+                $this->loadControllersFiles($controllers, $basePath, glob($file . $separator . '*'));
                 continue;
             }
             if (str_contains($file, '.php')) {
-                $this->registrar->register($file);
+                $controllers[] = $file;
             }
         }
 
