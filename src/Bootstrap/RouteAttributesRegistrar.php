@@ -154,14 +154,14 @@ final readonly class RouteAttributesRegistrar
                     if (isset($route['routeOption'])) {
                         $this->registerRoute(...$route);
                     } else if (isset($route['resourceRoute'])) {
-                        $this->registerControllerRoute(...$route);
+                        $this->registerResourceRoute(...$route);
                     }
                 }
             });
         }
     }
 
-    private function registerControllerRoute(ResourceRoute $resourceRoute, string $class): void
+    private function registerResourceRoute(ResourceRoute $resourceRoute, string $class): void
     {
 
         $route = Route::resource($resourceRoute->name, $class);
