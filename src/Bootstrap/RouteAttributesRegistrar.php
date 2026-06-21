@@ -4,6 +4,7 @@ namespace AbdelwahabT\RoutingExt\Bootstrap;
 
 use AbdelwahabT\RoutingExt\Routing\Attributes\ResourceRoute;
 use AbdelwahabT\RoutingExt\Routing\Attributes\RouteOption;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -193,7 +194,7 @@ final readonly class RouteAttributesRegistrar
     private function getMiddlewares(RouteOption|ResourceRoute $routeOption): array
     {
 
-        $middlewares = [];
+        $middlewares = [SubstituteBindings::class];
 
         if ($routeOption->middleware) {
             if (is_array($routeOption->middleware)) {
