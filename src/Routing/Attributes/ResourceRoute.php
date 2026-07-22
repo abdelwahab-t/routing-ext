@@ -12,6 +12,9 @@ class ResourceRoute
         public ?string $name = null,
         public ?string $prefix = null,
         public Middleware|array|string|null $middleware = null,
-        public array|string|null $ability = null
+        public array|string|null $ability = null,
+        public ?array $only = null,
+        public ?array $except = null,
+        public ?string $parameterName = null,
     ){}
 }

@@ -106,8 +106,8 @@ final readonly class RouteAttributesRegistrar
             $class = $this->getClass($controller);
             $reflectionClass = new ReflectionClass($class);
 
-            $this->attachResourceRouteIfExists($routes, $reflectionClass, $class);
             $this->attachMethodsRoutesIfExists($routes, $reflectionClass, $class);
+            $this->attachResourceRouteIfExists($routes, $reflectionClass, $class);
 
         }
 
@@ -164,15 +164,53 @@ final readonly class RouteAttributesRegistrar
 
     private function registerResourceRoute(ResourceRoute $resourceRoute, string $class): void
     {
+        $registration = Route::resource($resourceRoute->name, $class);
 
-        $route = Route::resource($resourceRoute->name, $class);
+        if ($resourceRoute->only) {
+            $registration->only($resourceRoute->only);
+        } elseif ($resourceRoute->except) {
+            $registration->except($resourceRoute->except);
+        }
+
+        if ($resourceRoute->parameterName) {
+            $registration->parameters([$resourceRoute->name => $resourceRoute->parameterName]);
+        }
 
         $middlewares = $this->getMiddlewares($resourceRoute);
 
         if (!empty($middlewares)) {
-            $route->middleware($middlewares);
+            $registration->middleware($middlewares);
         }
 
+        $registration->register();
+
+        $this->applyPerActionAbilities($resourceRoute);
+    }
+
+    private function applyPerActionAbilities(ResourceRoute $resourceRoute): void
+    {
+        if (!is_array($resourceRoute->ability) || !$this->isAssoc($resourceRoute->ability)) {
+            return;
+        }
+
+        foreach ($resourceRoute->ability as $action => $ability) {
+            $route = Route::getRoutes()->getByName("{$resourceRoute->name}.{$action}");
+
+            if (!$route) {
+                continue;
+            }
+
+            $route->middleware(
+                is_array($ability)
+                    ? array_map(fn (string $a) => "can:$a", $ability)
+                    : "can:$ability"
+            );
+        }
+    }
+
+    private function isAssoc(array $array): bool
+    {
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 
     private function registerRoute(RouteOption $routeOption, string $class, ReflectionMethod $method): void
@@ -206,7 +244,9 @@ final readonly class RouteAttributesRegistrar
 
         if ($routeOption->ability) {
             if (is_array($routeOption->ability)) {
-                $middlewares = array_merge($middlewares, array_map(fn (string $middleware) => "can:$middleware", $routeOption->ability));
+                if (!$this->isAssoc($routeOption->ability)) {
+                    $middlewares = array_merge($middlewares, array_map(fn (string $middleware) => "can:$middleware", $routeOption->ability));
+                }
             } else {
                 $middlewares[] = "can:$routeOption->ability";
             }
